@@ -3,8 +3,9 @@ services:
   - type: web
     name: gateweb-backend
     env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    rootDirectory: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -17,8 +18,9 @@ services:
   - type: web
     name: gateweb-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    publishPath: frontend/dist
+    rootDirectory: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
     staticPublishCustomHeaders:
       - values:
           - key: Cache-Control
