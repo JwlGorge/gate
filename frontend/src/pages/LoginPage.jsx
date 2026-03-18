@@ -32,13 +32,20 @@ const LoginPage = ({ onLogin }) => {
     }
 
     setLoading(true);
+    console.log('Login attempt for:', email);
     try {
       const response = await login(name, email.toLowerCase());
       onLogin(response.data);
+      console.log('Login successful:', response.data);
       navigate('/select');
     } catch (err) {
+      console.error('Login error details:', {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        config: err.config
+      });
       setError('Failed to login. Please try again.');
-      console.error(err);
     } finally {
       setLoading(false);
     }

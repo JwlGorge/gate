@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://neondb_owner:npg_qaBvAM2C4UYH@ep-bitter-wildflower-a8heqvd7-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://neondb_owner:npg_qaBvAM2C4UYH@ep-bitter-wildflower-a8heqvd7-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require").strip('"')
 
+print(f"Initializing database engine with URL: {SQLALCHEMY_DATABASE_URL[:20]}...")
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

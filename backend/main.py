@@ -3,7 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import json
 import os
+import logging
 from typing import List
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 import models, schemas, database
 
@@ -14,21 +19,32 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify the actual frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+@app.get("/health")
+def health_check():
+    logger.info("Health check pinged")
+    return {"status": "ok"}
+
 @app.post("/login", response_model=schemas.User)
 def login(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if not db_user:
-        db_user = models.User(name=user.name, email=user.email)
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-    return db_user
+    logger.info(f"Login attempt for email: {user.email}")
+    try:
+        db_user = db.query(models.User).filter(models.User.email == user.email).first()
+        if not db_user:
+            logger.info(f"Creating new user: {user.name} ({user.email})")
+            db_user = models.User(name=user.name, email=user.email)
+            db.add(db_user)
+            db.commit()
+            db.refresh(db_user)
+        return db_user
+    except Exception as e:
+        logger.error(f"Error during login for {user.email}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error during login")
 
 @app.get("/questions/{qp_name}")
 def get_questions(qp_name: str):
