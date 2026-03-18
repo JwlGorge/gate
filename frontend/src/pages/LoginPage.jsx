@@ -13,7 +13,7 @@ const LoginPage = ({ onLogin }) => {
 
   const validateEmail = (id) => {
     // Format: tve + YY + DEPT + ROLL + @cet.ac.in (e.g., tve22cs077@cet.ac.in)
-    const regex = /^tve\d{2}[a-z]{2}\d{3}@cet\.ac\.in$/i;
+    const regex = /^tve\d{2}[a-z]{1,5}\d{3}@cet\.ac\.in$/i;
     return regex.test(id);
   };
 
@@ -53,10 +53,10 @@ const LoginPage = ({ onLogin }) => {
 
   return (
     <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card" 
+        className="card"
         style={{ width: '100%', maxWidth: '450px' }}
       >
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -102,9 +102,9 @@ const LoginPage = ({ onLogin }) => {
             </div>
           )}
 
-          <button 
-            type="submit" 
-            className="primary" 
+          <button
+            type="submit"
+            className="primary"
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
             disabled={loading}
           >
