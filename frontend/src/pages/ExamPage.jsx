@@ -131,19 +131,18 @@ const ExamPage = ({ user }) => {
   };
 
   return (
-    <div className="exam-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 350px', height: '100vh', background: 'var(--bg-dark)' }}>
+    <div className="exam-grid">
       {/* Main content area */}
-      <div style={{ padding: '3rem', overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)' }}>
-            <span style={{ fontWeight: '700', color: 'var(--text-main)', fontSize: '1.25rem' }}>Question {currentQuestion.question_number}</span>
-            <span style={{ fontSize: '0.9rem' }}>/ {questions.length}</span>
-            <span style={{ marginLeft: '1.5rem', padding: '0.4rem 0.8rem', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              {currentQuestion.question_type}
-            </span>
+      <div className="exam-content">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div>
+            <div style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+              Section: {currentQuestion.question_type}
+            </div>
+            <h1 style={{ fontSize: '3rem', lineHeight: '1' }}>Question {currentQuestion.question_number}</h1>
           </div>
-          <button onClick={() => { if(confirm('Are you sure you want to submit?')) handleSubmit(); }} className="primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Send size={16} /> Submit Exam
+          <button onClick={() => { if(confirm('Are you sure you want to submit?')) handleSubmit(); }} className="primary">
+            Submit Assessment
           </button>
         </div>
 
@@ -321,18 +320,17 @@ const ExamPage = ({ user }) => {
       </div>
 
       {/* Right Sidebar */}
-      <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto' }}>
-        <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: timeLeft < 300 ? 'var(--error)' : 'var(--text-main)', marginBottom: '0.5rem' }}>
-            <Clock size={20} />
-            <span style={{ fontSize: '1.5rem', fontWeight: '800', fontVariantNumeric: 'tabular-nums' }}>{formatTime(timeLeft)}</span>
+      <div className="exam-sidebar">
+        <div className="card" style={{ padding: '2rem', textAlign: 'left', border: 'none', background: 'transparent', boxShadow: 'none' }}>
+          <div style={{ color: timeLeft < 300 ? 'var(--error)' : 'var(--text-main)', marginBottom: '0.25rem' }}>
+            <span style={{ fontSize: '2.5rem', fontWeight: '800', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.05em' }}>{formatTime(timeLeft)}</span>
           </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Time Remaining</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Remaining</p>
         </div>
 
-        <div className="card" style={{ padding: '1.5rem', flex: 1 }}>
-          <h4 style={{ marginBottom: '1.5rem', fontSize: '1rem' }}>Question Palette</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem' }}>
+        <div className="card" style={{ padding: '2rem', flex: 1, border: 'none', background: 'transparent', boxShadow: 'none' }}>
+          <h4 style={{ marginBottom: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Question Palette</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
             {questions.map((q, idx) => {
               const attempted = isAttempted(q.question_number);
               const active = idx === currentIndex;
@@ -342,17 +340,14 @@ const ExamPage = ({ user }) => {
                   onClick={() => setCurrentIndex(idx)}
                   style={{
                     padding: '0',
-                    height: '40px',
-                    width: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    background: active ? 'var(--primary)' : attempted ? '#333333' : 'var(--card-bg)',
-                    color: active || attempted ? 'white' : 'var(--text-muted)',
-                    border: active ? 'none' : '1px solid var(--border)',
-                    boxShadow: active ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
+                    height: '42px',
+                    width: '42px',
+                    borderRadius: '4px',
+                    fontSize: '0.9rem',
+                    fontWeight: '700',
+                    background: active ? '#000' : attempted ? '#eeeeee' : 'transparent',
+                    color: active ? '#fff' : 'var(--text-main)',
+                    border: active ? 'none' : '1px solid var(--border)'
                   }}
                 >
                   {q.question_number}

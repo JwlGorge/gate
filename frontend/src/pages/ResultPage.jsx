@@ -40,34 +40,28 @@ const ResultPage = ({ user }) => {
   };
 
   return (
-    <div className="container" style={{ paddingTop: '4rem' }}>
+    <div className="container" style={{ paddingTop: '6rem' }}>
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ textAlign: 'center', marginBottom: '4rem' }}
+        style={{ textAlign: 'left', marginBottom: '5rem' }}
       >
-        <div style={{ display: 'inline-flex', border: '1px solid var(--border)', padding: '1.5rem', borderRadius: '50%', color: 'var(--primary)', marginBottom: '2rem' }}>
-          <Trophy size={40} />
-        </div>
-        <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.02em' }}>Assessment Complete</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Well done, {user.name}! Here is your performance summary.</p>
+        <h1 style={{ fontSize: '4.5rem', fontWeight: '800', lineHeight: '1', marginBottom: '1.5rem', letterSpacing: '-0.05em' }}>Assessment<br/>Complete</h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', maxWidth: '600px' }}>Well done, {user.name}! Your results have been calculated and synced.</p>
       </motion.div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '4rem' }}>
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ color: 'var(--primary)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}><Award size={28} /></div>
-          <div style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '0.5rem' }}>{scoringResult.score}</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Marks</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '5rem' }}>
+        <div className="card" style={{ padding: '2.5rem' }}>
+          <div style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.05em' }}>{scoringResult.score}</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Marks</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ color: 'var(--primary)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}><Target size={28} /></div>
-          <div style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '0.5rem' }}>{scoringResult.accuracy}%</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Accuracy</div>
+        <div className="card" style={{ padding: '2.5rem' }}>
+          <div style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.05em' }}>{scoringResult.accuracy}%</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Accuracy</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ color: 'var(--primary)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}><Clock size={28} /></div>
-          <div style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '0.5rem' }}>{formatTime(timeTaken)}</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Time Taken</div>
+        <div className="card" style={{ padding: '2.5rem' }}>
+          <div style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.05em' }}>{formatTime(timeTaken)}</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Time Taken</div>
         </div>
       </div>
 
@@ -83,11 +77,10 @@ const ResultPage = ({ user }) => {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-                  <th style={{ padding: '1rem' }}>Rank</th>
-                  <th style={{ padding: '1rem' }}>Name</th>
-                  <th style={{ padding: '1rem' }}>College ID</th>
-                  <th style={{ padding: '1rem', textAlign: 'right' }}>Score</th>
+                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <th style={{ padding: '1.25rem 1rem' }}>Rank</th>
+                  <th style={{ padding: '1.25rem 1rem' }}>Name</th>
+                  <th style={{ padding: '1.25rem 1rem', textAlign: 'right' }}>Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -96,15 +89,13 @@ const ResultPage = ({ user }) => {
                     key={rank.email} 
                     style={{ 
                       borderBottom: '1px solid var(--border)',
-                      background: rank.email === user.email ? '#f5f5f5' : 'transparent',
-                      color: 'inherit',
-                      fontWeight: rank.email === user.email ? '700' : 'normal'
+                      background: rank.email === user.email ? '#f6f6f6' : 'transparent',
+                      fontWeight: rank.email === user.email ? '700' : '400'
                     }}
                   >
-                    <td style={{ padding: '1rem' }}>#{rank.rank}</td>
-                    <td style={{ padding: '1rem' }}>{rank.name} {rank.email === user.email && '(You)'}</td>
-                    <td style={{ padding: '1rem' }}>{rank.email}</td>
-                    <td style={{ padding: '1rem', textAlign: 'right', fontWeight: '800' }}>{rank.score}</td>
+                    <td style={{ padding: '1.25rem 1rem' }}>#{rank.rank}</td>
+                    <td style={{ padding: '1.25rem 1rem' }}>{rank.name} {rank.email === user.email && '(You)'}</td>
+                    <td style={{ padding: '1.25rem 1rem', textAlign: 'right', fontWeight: '800', fontSize: '1.1rem' }}>{rank.score}</td>
                   </tr>
                 ))}
               </tbody>
@@ -113,18 +104,17 @@ const ResultPage = ({ user }) => {
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+      <div className="btn-group">
         <button 
           className="primary" 
           onClick={() => navigate(`/review/${qpName}`, { state: { questions, answers } })} 
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
           <Search size={18} /> Review Answers
         </button>
-        <button className="secondary" onClick={() => navigate('/select')} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="secondary" onClick={() => navigate('/select')}>
           <RefreshCcw size={18} /> Try Another
         </button>
-        <button className="secondary" onClick={() => navigate('/select')} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="secondary" onClick={() => navigate('/select')}>
           <Home size={18} /> Dashboard
         </button>
       </div>

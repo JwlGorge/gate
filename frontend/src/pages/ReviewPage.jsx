@@ -66,15 +66,17 @@ const ReviewPage = () => {
   };
 
   return (
-    <div className="exam-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 350px', height: '100vh', background: 'var(--bg-dark)' }}>
-      <div style={{ padding: '3rem', overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)' }}>
-            <span style={{ fontWeight: '700', color: 'var(--text-main)', fontSize: '1.25rem' }}>Review Question {currentQuestion.question_number}</span>
-            <span style={{ fontSize: '0.9rem' }}>/ {questions.length}</span>
+    <div className="exam-grid">
+      <div className="exam-content">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div>
+            <div style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+              Final Review
+            </div>
+            <h1 style={{ fontSize: '3rem', lineHeight: '1' }}>Question {currentQuestion.question_number}</h1>
           </div>
-          <button onClick={() => navigate('/select')} className="secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Home size={16} /> Exit Review
+          <button onClick={() => navigate('/select')} className="secondary">
+            Exit Review
           </button>
         </div>
 
@@ -189,10 +191,10 @@ const ReviewPage = () => {
         </div>
       </div>
 
-      <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto' }}>
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h4 style={{ marginBottom: '1.5rem', fontSize: '1rem' }}>Review Palette</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem' }}>
+      <div className="exam-sidebar">
+        <div className="card" style={{ padding: '2rem', border: 'none', background: 'transparent', boxShadow: 'none' }}>
+          <h4 style={{ marginBottom: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Review Palette</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
             {questions.map((q, idx) => {
               const correct = isCorrect(q);
               const attempted = answers[q.question_number] !== undefined;
@@ -217,17 +219,15 @@ const ReviewPage = () => {
                   onClick={() => setCurrentIndex(idx)}
                   style={{
                     padding: '0',
-                    height: '40px',
-                    width: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    height: '42px',
+                    width: '42px',
                     borderRadius: '4px',
-                    fontSize: '0.875rem',
-                    background: bg,
-                    color: color,
-                    border: border,
-                    fontWeight: active ? '800' : '500'
+                    fontSize: '0.9rem',
+                    fontWeight: '700',
+                    background: active ? '#000' : attempted ? (correct ? '#f0f0f0' : '#ffffff') : 'transparent',
+                    color: active ? '#fff' : 'var(--text-main)',
+                    border: active ? 'none' : attempted ? '1px solid #000' : '1px solid var(--border)',
+                    opacity: attempted ? 1 : 0.5
                   }}
                 >
                   {q.question_number}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../api';
 import { User, Mail, ArrowRight } from 'lucide-react';
@@ -9,7 +9,18 @@ const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [wakingUp, setWakingUp] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Pre-warm the backend as soon as the login page loads
+    // This helps wake up Render's free tier early
+    import('../api').then(({ default: api }) => {
+      api.get('/health').catch(() => {
+        // Ignore error, we just want to trigger the wake-up
+      });
+    });
+  }, []);
 
   const validateEmail = (id) => {
     // Format: tve + YY + DEPT + ROLL + @cet.ac.in (e.g., tve22cs077@cet.ac.in)
@@ -33,6 +44,12 @@ const LoginPage = ({ onLogin }) => {
 
     setLoading(true);
     console.log('Login attempt for:', email);
+    
+    // If it takes more than 3 seconds, it's likely waking up
+    const wakeupTimer = setTimeout(() => {
+      setWakingUp(true);
+    }, 3000);
+
     try {
       const response = await login(name, email.toLowerCase());
       onLogin(response.data);
@@ -47,7 +64,9 @@ const LoginPage = ({ onLogin }) => {
       });
       setError('Failed to login. Please try again.');
     } finally {
+      clearTimeout(wakeupTimer);
       setLoading(false);
+      setWakingUp(false);
     }
   };
 
@@ -59,41 +78,35 @@ const LoginPage = ({ onLogin }) => {
         className="card"
         style={{ width: '100%', maxWidth: '450px' }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.75rem', letterSpacing: '-0.02em', color: 'var(--primary)' }}>
-            GATE Practice
+        <div style={{ marginBottom: '4rem' }}>
+          <h1 style={{ fontSize: '3.5rem', fontWeight: '800', lineHeight: '0.9', marginBottom: '1.5rem', letterSpacing: '-0.05em' }}>
+            GATE<br/>Practice
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Enter your details to begin the assessment</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: '500' }}>Enter your details to begin the assessment</p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>Full Name</label>
-            <div style={{ position: 'relative' }}>
-              <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                style={{ paddingLeft: '40px' }}
-              />
-            </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.75rem', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Username"
+            />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>College Email ID</label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input
-                type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tve22cs077@cet.ac.in"
-                style={{ paddingLeft: '40px' }}
-              />
-            </div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Format: tveXXYYZZZ@cet.ac.in (e.g., tve22cs077@cet.ac.in)</p>
+          <div style={{ marginBottom: '3rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.75rem', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>College ID</label>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tve22cs000@cet.ac.in"
+            />
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.75rem', lineHeight: '1.4' }}>
+              Format: tveXXYYZZZ@cet.ac.in
+            </p>
           </div>
 
           {error && (
@@ -108,7 +121,7 @@ const LoginPage = ({ onLogin }) => {
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
             disabled={loading}
           >
-            {loading ? 'Processing...' : 'Continue'} <ArrowRight size={18} />
+            {loading ? (wakingUp ? 'Waking up server...' : 'Processing...') : 'Continue'} <ArrowRight size={18} />
           </button>
         </form>
       </motion.div>

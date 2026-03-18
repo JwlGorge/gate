@@ -11,50 +11,41 @@ const SelectionPage = ({ user, onLogout }) => {
   ];
 
   return (
-    <div className="container" style={{ paddingTop: '4rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+    <div className="container" style={{ paddingTop: '6rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '5rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Welcome, {user.name}</h2>
-          <p style={{ color: 'var(--text-muted)' }}>{user.email} | Please select a question paper to begin.</p>
+          <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem' }}>Welcome,<br/>{user.name.split(' ')[0]}</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Select a question paper to begin.</p>
         </div>
-        <button onClick={onLogout} className="secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <LogOut size={18} /> Logout
+        <button onClick={onLogout} className="secondary">
+          Logout
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+      <div className="selection-grid">
         {mockQPs.map((qp) => (
           <motion.div 
             key={qp.id}
-            whileHover={{ y: -5 }}
+            whileHover={{ y: -4, borderColor: 'var(--primary)' }}
             className="card"
-            style={{ cursor: 'pointer', position: 'relative', overflow: 'hidden' }}
+            style={{ cursor: 'pointer', padding: '2rem' }}
             onClick={() => navigate(`/exam/${qp.id}`)}
           >
-            <div style={{ position: 'absolute', top: 0, right: 0, padding: '1rem', color: 'var(--primary)', opacity: 0.03 }}>
-              <BookOpen size={100} />
-            </div>
-            
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: '#f5f5f5', padding: '0.75rem', borderRadius: '4px', color: 'var(--primary)', border: '1px solid var(--border)' }}>
-                  <BookOpen size={20} />
-                </div>
-                <span style={{ fontWeight: '700', fontSize: '1.25rem', letterSpacing: '-0.01em' }}>{qp.name}</span>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem', lineHeight: '1.1' }}>{qp.name}</h3>
               
-              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: '600', padding: '0.4rem 0.8rem', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2.5rem' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: '800', padding: '0.25rem 0.5rem', background: '#000', color: '#fff', borderRadius: '2px', textTransform: 'uppercase' }}>
                   {qp.duration}
                 </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: '600', padding: '0.4rem 0.8rem', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-muted)' }}>
-                  {qp.questions} Questions
+                <span style={{ fontSize: '0.7rem', fontWeight: '800', padding: '0.25rem 0.5rem', border: '1px solid var(--border)', borderRadius: '2px', textTransform: 'uppercase' }}>
+                  {qp.questions} Qs
                 </span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--primary)', fontWeight: '600', fontSize: '0.9rem' }}>
-                <span style={{ borderBottom: '1px solid transparent', transition: 'border-color 0.2s' }}>Start Assessment</span>
-                <ChevronRight size={18} />
+              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontWeight: '700', fontSize: '1rem' }}>
+                <span>Start Exam</span>
+                <ChevronRight size={20} />
               </div>
             </div>
           </motion.div>
