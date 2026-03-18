@@ -15,8 +15,9 @@ services:
         value: 3.11.6
 
   # Frontend
-  - type: static
+  - type: web
     name: gateweb-frontend
+    env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     publishDir: dist
