@@ -183,6 +183,7 @@ input:focus {
   gap: 2rem;
   overflow-y: auto;
   background: #fcfcfc;
+  z-index: 100;
 }
 
 .selection-grid {
@@ -202,18 +203,42 @@ input:focus {
 @media (max-width: 1024px) {
   .exam-grid {
     grid-template-columns: 1fr;
-    height: auto;
-    overflow-y: visible;
+    height: 100vh;
+    overflow: hidden;
   }
   .exam-content {
     border-right: none;
     padding: 1.5rem;
+    height: 100%;
+    overflow-y: auto;
   }
   .exam-sidebar {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border);
-    height: auto;
-    overflow-y: visible;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 350px;
+    height: 100vh;
+    padding: 3rem 1.5rem;
+    background: #ffffff;
+    border-left: 1px solid var(--border);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    display: flex !important; /* Managed by AnimatePresence in React */
+  }
+  .desktop-timer {
+    display: none;
+  }
+  .mobile-timer {
+    display: block !important;
+  }
+  .mobile-palette-toggle {
+    display: flex !important;
+  }
+  .desktop-only {
+    display: none;
+  }
+  .mobile-only {
+    display: block !important;
   }
 }
 

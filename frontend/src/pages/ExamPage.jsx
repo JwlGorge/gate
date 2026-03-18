@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getQuestions, submitResult } from '../api';
 import { calculateScore } from '../utils/scoring';
 import VirtualKeypad from '../components/VirtualKeypad';
-import { ChevronLeft, ChevronRight, Send, Clock, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutGrid, X, Clock } from 'lucide-react';
 import { BlockMath, InlineMath } from 'react-katex';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -27,6 +27,7 @@ const ExamPage = ({ user }) => {
   const [timeLeft, setTimeLeft] = useState(3 * 60 * 60); // 3 hours in seconds
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showPalette, setShowPalette] = useState(false);
   
   const timerRef = useRef(null);
 
@@ -80,7 +81,6 @@ const ExamPage = ({ user }) => {
   const handleNATInput = (char) => {
     const qNum = questions[currentIndex].question_number;
     const current = answers[qNum] || '';
-    // Basic validation for numbers
     if (char === '.' && current.includes('.')) return;
     if (char === '-' && current.length > 0) return;
     setAnswers({ ...answers, [qNum]: current + char });
@@ -112,7 +112,6 @@ const ExamPage = ({ user }) => {
 
     try {
       await submitResult(resultData);
-      // Pass the results to the result page via state
       navigate(`/result/${qpName}`, { state: { scoringResult, timeTaken: resultData.time_taken, questions, answers } });
     } catch (err) {
       console.error('Submission failed:', err);
@@ -121,8 +120,8 @@ const ExamPage = ({ user }) => {
     }
   };
 
-  if (loading) return <div className="container">Loading questions...</div>;
-  if (questions.length === 0) return <div className="container">No questions found.</div>;
+  if (loading) return <div className="container" style={{ paddingTop: '10rem', textAlign: 'center' }}>Loading questions...</div>;
+  if (questions.length === 0) return <div className="container" style={{ paddingTop: '10rem', textAlign: 'center' }}>No questions found.</div>;
 
   const currentQuestion = questions[currentIndex];
   const isAttempted = (qNum) => {
@@ -132,18 +131,33 @@ const ExamPage = ({ user }) => {
 
   return (
     <div className="exam-grid">
-      {/* Main content area */}
       <div className="exam-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3rem', gap: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-              Section: {currentQuestion.question_type}
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+              {currentQuestion.question_type} • Section
             </div>
-            <h1 style={{ fontSize: '3rem', lineHeight: '1' }}>Question {currentQuestion.question_number}</h1>
+            <h1 style={{ fontSize: '3rem', lineHeight: '1', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              Q{currentQuestion.question_number}
+              <div className="mobile-timer" style={{ display: 'none', fontSize: '1.25rem', padding: '0.5rem 1rem', background: '#f6f6f6', borderRadius: '4px', fontVariantNumeric: 'tabular-nums', fontWeight: '800' }}>
+                {formatTime(timeLeft)}
+              </div>
+            </h1>
           </div>
-          <button onClick={() => { if(confirm('Are you sure you want to submit?')) handleSubmit(); }} className="primary">
-            Submit Assessment
-          </button>
+          
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button 
+              className="secondary mobile-palette-toggle" 
+              style={{ display: 'none', padding: '0.875rem' }}
+              onClick={() => setShowPalette(true)}
+            >
+              <LayoutGrid size={22} />
+            </button>
+            <button onClick={() => { if(confirm('Are you sure you want to submit?')) handleSubmit(); }} className="primary">
+              <span className="desktop-only">Submit Assessment</span>
+              <span className="mobile-only" style={{ display: 'none' }}>Submit</span>
+            </button>
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -153,9 +167,9 @@ const ExamPage = ({ user }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             className="card"
-            style={{ minHeight: '300px' }}
+            style={{ minHeight: '300px', marginBottom: '2rem' }}
           >
-            <div style={{ fontSize: '1.25rem', marginBottom: '2rem', whiteSpace: 'pre-wrap' }}>
+            <div style={{ fontSize: '1.25rem', marginBottom: '2rem', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
               {currentQuestion.question_text.split(/(\$\$.*?\$\$|\$.*?\$)/g).map((part, i) => {
                 if (part.startsWith('$$') && part.endsWith('$$')) {
                   return <BlockMath key={i} math={part.slice(2, -2)} />;
@@ -177,78 +191,28 @@ const ExamPage = ({ user }) => {
               </div>
             )}
 
-            {currentQuestion.question_type === 'MCQ' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {Object.entries(currentQuestion.options).map(([key, value]) => (
-                  <button
-                    key={key}
-                    className="secondary"
-                    onClick={() => handleMCQSelect(key)}
-                    style={{ 
-                      textAlign: 'left', 
-                      display: 'flex', 
-                      gap: '1rem', 
-                      borderColor: answers[currentQuestion.question_number] === key ? 'var(--primary)' : 'var(--border)',
-                      background: answers[currentQuestion.question_number] === key ? '#111111' : 'transparent',
-                      color: answers[currentQuestion.question_number] === key ? '#ffffff' : 'var(--text-main)'
-                    }}
-                  >
-                    <span style={{ fontWeight: '700', color: answers[currentQuestion.question_number] === key ? '#ffffff' : 'var(--primary)' }}>{key}.</span>
-                    <span style={{ flex: 1 }}>
-                      {isImageOption(value) ? (
-                        <img 
-                          src={getImagePath(value)} 
-                          alt={`Option ${key}`} 
-                          loading="lazy"
-                          style={{ maxWidth: '100%', maxHeight: '150px', objectFit: 'contain', background: '#fff', padding: '0.5rem', borderRadius: '4px' }} 
-                        />
-                      ) : (
-                        value.split(/(\$.*?\$)/g).map((part, i) => {
-                          if (part.startsWith('$') && part.endsWith('$')) {
-                            return <InlineMath key={i} math={part.slice(1, -1)} />;
-                          }
-                          return part;
-                        })
-                      )}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {currentQuestion.question_type === 'MSQ' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Select one or more correct options</p>
-                {Object.entries(currentQuestion.options).map(([key, value]) => {
-                  const isSelected = (answers[currentQuestion.question_number] || []).includes(key);
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {(currentQuestion.question_type === 'MCQ' || currentQuestion.question_type === 'MSQ') && 
+                Object.entries(currentQuestion.options).map(([key, value]) => {
+                  const isSelected = currentQuestion.question_type === 'MSQ'
+                    ? (answers[currentQuestion.question_number] || []).includes(key)
+                    : answers[currentQuestion.question_number] === key;
+                  
                   return (
                     <button
                       key={key}
                       className="secondary"
-                      onClick={() => handleMSQToggle(key)}
+                      onClick={() => currentQuestion.question_type === 'MSQ' ? handleMSQToggle(key) : handleMCQSelect(key)}
                       style={{ 
                         textAlign: 'left', 
                         display: 'flex', 
-                        gap: '1rem', 
-                        borderColor: isSelected ? 'var(--primary)' : 'var(--border)',
-                        background: isSelected ? '#111111' : 'transparent',
-                        color: isSelected ? '#ffffff' : 'var(--text-main)'
+                        gap: '1.25rem', 
+                        padding: '1.25rem',
+                        background: isSelected ? '#000' : '#f6f6f6',
+                        color: isSelected ? '#fff' : 'var(--text-main)',
                       }}
                     >
-                      <span style={{ 
-                        width: '18px', 
-                        height: '18px', 
-                        border: '1px solid', 
-                        borderColor: isSelected ? '#ffffff' : 'var(--text-muted)',
-                        borderRadius: '2px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '10px'
-                      }}>
-                        {isSelected && '✓'}
-                      </span>
-                      <span style={{ fontWeight: '700', color: isSelected ? '#ffffff' : 'var(--primary)' }}>{key}.</span>
+                      <span style={{ fontWeight: '800' }}>{key}.</span>
                       <span style={{ flex: 1 }}>
                         {isImageOption(value) ? (
                           <img 
@@ -269,109 +233,135 @@ const ExamPage = ({ user }) => {
                     </button>
                   );
                 })}
-              </div>
-            )}
 
-            {currentQuestion.question_type === 'NAT' && (
-              <div>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Enter the numerical value using the virtual keypad</p>
-                <div style={{ 
-                  background: 'var(--bg-dark)', 
-                  padding: '1.5rem', 
-                  borderRadius: '8px', 
-                  fontSize: '2rem', 
-                  minHeight: '4rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: 'var(--primary)',
-                  fontWeight: '700',
-                  border: '1px solid var(--border)'
-                }}>
-                  {answers[currentQuestion.question_number] || '_'}
+              {currentQuestion.question_type === 'NAT' && (
+                <div>
+                  <div style={{ 
+                    background: '#f6f6f6', 
+                    padding: '1.5rem', 
+                    borderRadius: '4px', 
+                    fontSize: '2.5rem', 
+                    minHeight: '4.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'var(--primary)',
+                    fontWeight: '800',
+                    marginBottom: '2rem'
+                  }}>
+                    {answers[currentQuestion.question_number] || '_'}
+                  </div>
+                  <VirtualKeypad 
+                    onInput={handleNATInput}
+                    onDelete={handleNATDelete}
+                    onClear={handleNATClear}
+                  />
                 </div>
-                <VirtualKeypad 
-                  onInput={handleNATInput}
-                  onDelete={handleNATDelete}
-                  onClear={handleNATClear}
-                />
-              </div>
-            )}
+              )}
+            </div>
           </motion.div>
         </AnimatePresence>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
+        <div className="btn-group" style={{ justifyContent: 'space-between', marginTop: '2rem' }}>
           <button 
             className="secondary" 
             disabled={currentIndex === 0}
             onClick={() => setCurrentIndex(currentIndex - 1)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            <ChevronLeft size={18} /> Previous
+            <ChevronLeft size={20} /> Previous
           </button>
           <button 
             className="secondary" 
             disabled={currentIndex === questions.length - 1}
             onClick={() => setCurrentIndex(currentIndex + 1)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            Next <ChevronRight size={18} />
+            Next <ChevronRight size={20} />
           </button>
         </div>
       </div>
 
-      {/* Right Sidebar */}
-      <div className="exam-sidebar">
-        <div className="card" style={{ padding: '2rem', textAlign: 'left', border: 'none', background: 'transparent', boxShadow: 'none' }}>
-          <div style={{ color: timeLeft < 300 ? 'var(--error)' : 'var(--text-main)', marginBottom: '0.25rem' }}>
-            <span style={{ fontSize: '2.5rem', fontWeight: '800', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.05em' }}>{formatTime(timeLeft)}</span>
-          </div>
-          <p style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Remaining</p>
-        </div>
+      <AnimatePresence>
+        {showPalette && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPalette(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 90, backdropFilter: 'blur(4px)' }}
+          />
+        )}
+        {(showPalette || window.innerWidth > 1024) && (
+          <motion.div 
+            initial={{ x: 350 }}
+            animate={{ x: 0 }}
+            exit={{ x: 350 }}
+            transition={{ type: 'tween', duration: 0.3 }}
+            className={`exam-sidebar ${showPalette ? 'active' : ''}`}
+            style={{ zIndex: 100 }}
+          >
+            {showPalette && (
+              <button 
+                onClick={() => setShowPalette(false)} 
+                style={{ position: 'absolute', top: '2rem', right: '1.5rem', background: 'transparent', border: 'none', padding: '0.5rem' }}
+                className="mobile-only"
+              >
+                <X size={28} />
+              </button>
+            )}
+            
+            <div className="desktop-timer" style={{ marginBottom: '2rem' }}>
+              <div className="card" style={{ padding: '2rem', border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <div style={{ color: timeLeft < 300 ? 'var(--error)' : 'var(--text-main)', marginBottom: '0.25rem' }}>
+                  <span style={{ fontSize: '3rem', fontWeight: '800', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.05em' }}>{formatTime(timeLeft)}</span>
+                </div>
+                <p style={{ fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Remaining</p>
+              </div>
+            </div>
 
-        <div className="card" style={{ padding: '2rem', flex: 1, border: 'none', background: 'transparent', boxShadow: 'none' }}>
-          <h4 style={{ marginBottom: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Question Palette</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
-            {questions.map((q, idx) => {
-              const attempted = isAttempted(q.question_number);
-              const active = idx === currentIndex;
-              return (
-                <button
-                  key={q.question_number}
-                  onClick={() => setCurrentIndex(idx)}
-                  style={{
-                    padding: '0',
-                    height: '42px',
-                    width: '42px',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem',
-                    fontWeight: '700',
-                    background: active ? '#000' : attempted ? '#eeeeee' : 'transparent',
-                    color: active ? '#fff' : 'var(--text-main)',
-                    border: active ? 'none' : '1px solid var(--border)'
-                  }}
-                >
-                  {q.question_number}
-                </button>
-              );
-            })}
-          </div>
-
-          <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }}>
-              <div style={{ width: '12px', height: '12px', background: '#333333', borderRadius: '2px' }}></div>
-              <span>Attempted</span>
+            <div className="card" style={{ padding: '2rem', flex: 1, border: 'none', background: 'transparent', boxShadow: 'none' }}>
+              <h4 style={{ marginBottom: '2rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Question Palette</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                {questions.map((q, idx) => {
+                  const attempted = isAttempted(q.question_number);
+                  const active = idx === currentIndex;
+                  return (
+                    <button
+                      key={q.question_number}
+                      onClick={() => {
+                        setCurrentIndex(idx);
+                        if(window.innerWidth <= 1024) setShowPalette(false);
+                      }}
+                      style={{
+                        padding: '0',
+                        height: '44px',
+                        width: '44px',
+                        borderRadius: '4px',
+                        fontSize: '1rem',
+                        fontWeight: '800',
+                        background: active ? '#000' : attempted ? '#eeeeee' : 'transparent',
+                        color: active ? '#fff' : 'var(--text-main)',
+                        border: active ? 'none' : '1px solid var(--border)'
+                      }}
+                    >
+                      {q.question_number}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <div style={{ marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', fontWeight: '500' }}>
+                  <div style={{ width: '12px', height: '12px', background: '#eeeeee', border: '1px solid var(--border)', borderRadius: '2px' }}></div>
+                  <span>Attempted</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', fontWeight: '500' }}>
+                  <div style={{ width: '12px', height: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '2px' }}></div>
+                  <span>Unattempted</span>
+                </div>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }}>
-              <div style={{ width: '12px', height: '12px', background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '2px' }}></div>
-              <span>Unattempted</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }}>
-              <div style={{ width: '12px', height: '12px', background: 'var(--primary)', borderRadius: '2px' }}></div>
-              <span>Current</span>
-            </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
