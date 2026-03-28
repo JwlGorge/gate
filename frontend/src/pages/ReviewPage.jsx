@@ -73,7 +73,7 @@ const ReviewPage = () => {
             <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
               Final Review • {currentQuestion.question_type}
             </div>
-            <h1 style={{ fontSize: '3rem', lineHeight: '1' }}>Q{currentQuestion.question_number}</h1>
+            <h1 style={{ fontSize: '3rem', lineHeight: '1' }}>Q{currentIndex + 1}</h1>
           </div>
           
           <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -108,7 +108,7 @@ const ReviewPage = () => {
               <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'center', background: '#fff', padding: '1.5rem', border: '1px solid var(--border)', borderRadius: '4px' }}>
                 <img 
                   src={currentQuestion.image} 
-                  alt={`Question ${currentQuestion.question_number}`} 
+                  alt={`Question ${currentIndex + 1}`} 
                   loading="lazy"
                   style={{ maxWidth: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain' }} 
                 />
@@ -256,7 +256,7 @@ const ReviewPage = () => {
                         border: active ? 'none' : '1px solid var(--border)',
                       }}
                     >
-                      {q.question_number}
+                      {idx + 1}
                     </button>
                   );
                 })}

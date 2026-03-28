@@ -136,12 +136,11 @@ const ExamPage = ({ user }) => {
       <div className="exam-content">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3rem', gap: '1rem' }}>
           <div>
-            <img src="/logo.png" alt="Logo" style={{ width: '80px', height: 'auto', marginBottom: '1rem', display: 'block' }} />
             <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
               {currentQuestion.question_type} • Section
             </div>
             <h1 style={{ fontSize: '3rem', lineHeight: '1', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-              Q{currentQuestion.question_number}
+              Q{currentIndex + 1}
               <div className="mobile-timer" style={{ display: 'none', fontSize: '1.25rem', padding: '0.5rem 1rem', background: '#f6f6f6', borderRadius: '4px', fontVariantNumeric: 'tabular-nums', fontWeight: '800' }}>
                 {formatTime(timeLeft)}
               </div>
@@ -187,7 +186,7 @@ const ExamPage = ({ user }) => {
               <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'center', background: '#fff', padding: '1.5rem', border: '1px solid var(--border)', borderRadius: '4px' }}>
                 <img 
                   src={currentQuestion.image} 
-                  alt={`Question ${currentQuestion.question_number}`} 
+                  alt={`Question ${currentIndex + 1}`} 
                   loading="lazy"
                   style={{ maxWidth: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain' }} 
                 />
@@ -345,7 +344,7 @@ const ExamPage = ({ user }) => {
                         border: active ? 'none' : '1px solid var(--border)'
                       }}
                     >
-                      {q.question_number}
+                      {idx + 1}
                     </button>
                   );
                 })}
