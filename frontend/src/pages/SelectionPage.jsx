@@ -7,17 +7,18 @@ const SelectionPage = ({ user, onLogout }) => {
   const navigate = useNavigate();
 
   const mockQPs = [
-    { id: 'civil-engineering', name: 'Civil Engineering', code: 'CE', duration: '3 Hours', questions: 65 }
+    { id: 'civil-engineering', name: 'Civil Engineering', code: 'CE', duration: '1 Hour', questions: 30 }
   ];
 
   return (
     <div className="container" style={{ paddingTop: '6rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '5rem' }}>
         <div>
-          <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem' }}>Welcome,<br/>{user.name.split(' ')[0]}</h1>
+          <img src="/logo.png" alt="Logo" style={{ width: '120px', height: 'auto', marginBottom: '2rem', display: 'block' }} />
+          <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: '1.1' }}>Welcome,<br/>{user.name.split(' ')[0]}</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Select a question paper to begin.</p>
         </div>
-        <button onClick={onLogout} className="secondary">
+        <button onClick={onLogout} className="secondary" style={{ marginTop: '0.5rem' }}>
           Logout
         </button>
       </div>

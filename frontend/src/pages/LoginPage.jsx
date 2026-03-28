@@ -79,9 +79,7 @@ const LoginPage = ({ onLogin }) => {
         style={{ width: '100%', maxWidth: '450px' }}
       >
         <div style={{ marginBottom: '4rem' }}>
-          <h1 style={{ fontSize: '3.5rem', fontWeight: '800', lineHeight: '0.9', marginBottom: '1.5rem', letterSpacing: '-0.05em' }}>
-            GATE<br/>Practice
-          </h1>
+          <img src="/logo.png" alt="Civil Engineering Association" style={{ width: '220px', height: 'auto', marginBottom: '2rem', display: 'block' }} />
           <p style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: '500' }}>Enter your details to begin the assessment</p>
         </div>
 

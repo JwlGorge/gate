@@ -24,7 +24,7 @@ const ExamPage = ({ user }) => {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(3 * 60 * 60); // 3 hours in seconds
+  const [timeLeft, setTimeLeft] = useState(1 * 60 * 60); // 1 hour in seconds
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showPalette, setShowPalette] = useState(false);
@@ -35,7 +35,9 @@ const ExamPage = ({ user }) => {
     const fetchQuestions = async () => {
       try {
         const response = await getQuestions(qpName);
-        setQuestions(response.data);
+        const selectedQuests = [1, 2, 3, 5, 8, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40].map(String);
+        const filtered = response.data.filter(q => selectedQuests.includes(String(q.question_number)));
+        setQuestions(filtered);
       } catch (err) {
         console.error('Error fetching questions:', err);
       } finally {
@@ -107,7 +109,7 @@ const ExamPage = ({ user }) => {
       qp_name: qpName,
       score: scoringResult.score,
       accuracy: scoringResult.accuracy,
-      time_taken: (3 * 60 * 60) - timeLeft
+      time_taken: (1 * 60 * 60) - timeLeft
     };
 
     try {
@@ -134,6 +136,7 @@ const ExamPage = ({ user }) => {
       <div className="exam-content">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3rem', gap: '1rem' }}>
           <div>
+            <img src="/logo.png" alt="Logo" style={{ width: '80px', height: 'auto', marginBottom: '1rem', display: 'block' }} />
             <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
               {currentQuestion.question_type} • Section
             </div>
